@@ -1,9 +1,11 @@
 ﻿.idea
-Contracts/obj
-Contracts/bin
-
-LoggerService/bin
-LoggerService/obj
-
-CompanyEmployees/obj
-CompanyEmployees/bin
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
