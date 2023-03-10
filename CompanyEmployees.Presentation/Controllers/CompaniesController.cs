@@ -1,14 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Service.Contracts;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/companies")]
 [ApiController]
 public class CompaniesController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
+    private readonly IServiceManager _service;
+
+    public CompaniesController(IServiceManager service)
     {
-        return View();
+        _service = service;
+    }
+
+    // GET
+    [HttpGet]
+    public IActionResult GetCompanies()
+    {
+        try
+        {
+            var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
+            return Ok(companies);
+        }
+        catch
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
     }
 }
