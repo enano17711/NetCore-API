@@ -16,4 +16,11 @@ public sealed class EmployeeRepository : RepositoryBase<Employee>,
                 trackChanges)
             .OrderBy(e => e.Name)
             .ToList();
+
+    public Employee? GetEmployee(Guid companyId,
+        Guid employeeId,
+        bool trackChanges) =>
+        FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(employeeId),
+                trackChanges)
+            .SingleOrDefault();
 }
