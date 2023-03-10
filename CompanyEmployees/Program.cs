@@ -5,7 +5,8 @@ using NLog;
 var builder = WebApplication.CreateBuilder(args);
 
 // nlog register
-LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
+    "/nlog.config"));
 
 // Add services to the container.
 // ServiceExtension Class
@@ -17,18 +18,24 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 
 // Program Class
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
-else app.UseHsts();
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+else
+    app.UseHsts();
 
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.All
+});
 
 app.UseCors("CorsPolicy");
 
