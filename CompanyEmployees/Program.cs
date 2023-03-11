@@ -19,11 +19,8 @@ builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
-
-builder.Services.Configure<ApiBehaviorOptions>(option =>
-{
-    option.SuppressModelStateInvalidFilter = true;
-});
+// Suppress default validation
+builder.Services.Configure<ApiBehaviorOptions>(option => { option.SuppressModelStateInvalidFilter = true; });
 // Program Class
 builder.Services.AddControllers(config =>
     {

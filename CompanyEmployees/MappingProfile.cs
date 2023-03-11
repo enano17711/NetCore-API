@@ -15,5 +15,6 @@ public class MappingProfile : Profile
                     x.Country)));
         CreateMap<Employee, EmployeeDto>();
         CreateMap<CompanyForCreationDto, Company>();
+        CreateMap<EmployeeForCreationDto, Employee>();
     }
 }
