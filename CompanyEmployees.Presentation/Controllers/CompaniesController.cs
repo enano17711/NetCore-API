@@ -39,7 +39,9 @@ public class CompaniesController : ControllerBase
     {
         if (company is null)
             return BadRequest($"{nameof(CompanyForCreationDto)} object is null");
+        
         var createdCompany = _service.CompanyService.CreateCompany(company);
+        
         return CreatedAtRoute("CompanyById",
             new
             {
