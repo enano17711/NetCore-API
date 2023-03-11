@@ -20,7 +20,12 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Program Class
-builder.Services.AddControllers()
+builder.Services.AddControllers(config =>
+    {
+        config.RespectBrowserAcceptHeader = true;
+        config.ReturnHttpNotAcceptable = true;
+    })
+    .AddXmlDataContractSerializerFormatters()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 
 var app = builder.Build();
@@ -29,7 +34,8 @@ var app = builder.Build();
 var logger = app.Services.GetRequiredService<ILoggerManager>();
 app.ConfigureExceptionHandler(logger);
 
-if (app.Environment.IsProduction()) app.UseHsts();
+if (app.Environment.IsProduction())
+    app.UseHsts();
 
 app.UseHttpsRedirection();
 
