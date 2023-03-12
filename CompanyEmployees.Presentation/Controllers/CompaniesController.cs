@@ -39,14 +39,32 @@ public class CompaniesController : ControllerBase
     {
         if (company is null)
             return BadRequest($"{nameof(CompanyForCreationDto)} object is null");
-        
+
         var createdCompany = _service.CompanyService.CreateCompany(company);
-        
+
         return CreatedAtRoute("CompanyById",
             new
             {
                 id = createdCompany.Id
             },
             createdCompany);
+    }
+
+    // GET COLLECTION
+    [HttpGet("collection/{ids}", Name = "CompanyCollection")]
+    public IActionResult GetCompanyCollection(IEnumerable<Guid> ids)
+    {
+        var companies = _service.CompanyService.GetByIds(ids, trackChanges: false);
+
+        return Ok(companies);
+    }
+
+    // POST COLLECTION
+    [HttpPost("collection")]
+    public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+    {
+        var result = _service.CompanyService.CreateCompanyCollection(companyCollection);
+
+        return CreatedAtRoute("CompanyCollection", new { result.ids }, result.companies);
     }
 }
