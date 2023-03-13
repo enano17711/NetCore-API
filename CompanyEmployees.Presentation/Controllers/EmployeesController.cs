@@ -24,7 +24,8 @@ public class EmployeesController : ControllerBase
         return Ok(employees);
     }
 
-    [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]
+    [HttpGet("{id:guid}",
+        Name = "GetEmployeeForCompany")]
     public IActionResult GetEmployeeForCompany(Guid companyId,
         Guid id)
     {
@@ -54,5 +55,17 @@ public class EmployeesController : ControllerBase
                 id = employeeToReturn.Id
             },
             employeeToReturn);
+    }
+
+    // DELETE
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteEmployeeForCompany(Guid companyId,
+        Guid id)
+    {
+        _serviceManager.EmployeeService.DeleteEmployeeForCompany(companyId,
+            id,
+            trackChanges: false);
+
+        return NoContent();
     }
 }

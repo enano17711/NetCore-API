@@ -32,9 +32,9 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 
     public void Delete(T entity) =>
         RepositoryContext.Set<T>()
-            .Update(entity);
+            .Remove(entity);
 
     public void Update(T entity) =>
         RepositoryContext.Set<T>()
-            .Remove(entity);
+            .Update(entity);
 }
