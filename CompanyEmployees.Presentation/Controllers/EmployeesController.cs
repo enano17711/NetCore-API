@@ -17,7 +17,7 @@ public class EmployeesController : ControllerBase
 
     // GET
     [HttpGet]
-    public IActionResult GetEmployeesFroCompany(Guid companyId)
+    public IActionResult GetEmployeesFromCompany(Guid companyId)
     {
         var employees = _serviceManager.EmployeeService.GetEmployees(companyId,
             trackChanges: false);
@@ -65,6 +65,24 @@ public class EmployeesController : ControllerBase
         _serviceManager.EmployeeService.DeleteEmployeeForCompany(companyId,
             id,
             trackChanges: false);
+
+        return NoContent();
+    }
+
+    // UPDATE
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateEmployeeForCompany(Guid companyId,
+        Guid id,
+        [FromBody] EmployeeForUpdateDto employee)
+    {
+        if (employee is null)
+            return BadRequest("EmployeeForUpdateDto object is null");
+
+        _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId,
+            id,
+            employee,
+            compTrackChanges: false,
+            empTrackChanges: true);
 
         return NoContent();
     }
