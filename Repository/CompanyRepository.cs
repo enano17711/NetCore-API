@@ -29,4 +29,9 @@ public sealed class CompanyRepository : RepositoryBase<Company>,
         FindByCondition(c => ids.Contains(c.Id),
                 trackChanges)
             .ToList();
+
+    public void DeleteCompany(Company company)
+    {
+        Delete(company);
+    }
 }
