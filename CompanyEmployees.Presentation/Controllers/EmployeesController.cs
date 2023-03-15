@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
@@ -19,71 +20,56 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     public IActionResult GetEmployeesFromCompany(Guid companyId)
     {
-        var employees = _serviceManager.EmployeeService.GetEmployees(companyId,
-            trackChanges: false);
+        var employees = _serviceManager.EmployeeService.GetEmployees(companyId, trackChanges: false);
         return Ok(employees);
     }
 
-    [HttpGet("{id:guid}",
-        Name = "GetEmployeeForCompany")]
-    public IActionResult GetEmployeeForCompany(Guid companyId,
-        Guid id)
+    [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]
+    public IActionResult GetEmployeeForCompany(Guid companyId, Guid id)
     {
-        var employee = _serviceManager.EmployeeService.GetEmployee(companyId,
-            id,
-            trackChanges: false);
+        var employee = _serviceManager.EmployeeService.GetEmployee(companyId, id, trackChanges: false);
         return Ok(employee);
     }
 
     // POST
     [HttpPost]
-    public IActionResult CreateEmployeeForCompany(Guid companyId,
-        [FromBody] EmployeeForCreationDto employee)
+    public IActionResult CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
     {
-        if (employee is null)
-            return BadRequest("EmployeeForCreationDto object is null");
-
+        if (employee is null) return BadRequest("EmployeeForCreationDto object is null");
         var employeeToReturn =
-            _serviceManager.EmployeeService.CreateEmployeeForCompany(companyId,
-                employee,
-                trackChanges: false);
-
-        return CreatedAtRoute("GetEmployeeForCompany",
-            new
-            {
-                companyId,
-                id = employeeToReturn.Id
-            },
-            employeeToReturn);
+            _serviceManager.EmployeeService.CreateEmployeeForCompany(companyId, employee, trackChanges: false);
+        return CreatedAtRoute("GetEmployeeForCompany", new { companyId, id = employeeToReturn.Id }, employeeToReturn);
     }
 
     // DELETE
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteEmployeeForCompany(Guid companyId,
-        Guid id)
+    public IActionResult DeleteEmployeeForCompany(Guid companyId, Guid id)
     {
-        _serviceManager.EmployeeService.DeleteEmployeeForCompany(companyId,
-            id,
-            trackChanges: false);
-
+        _serviceManager.EmployeeService.DeleteEmployeeForCompany(companyId, id, trackChanges: false);
         return NoContent();
     }
 
     // UPDATE
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateEmployeeForCompany(Guid companyId,
-        Guid id,
-        [FromBody] EmployeeForUpdateDto employee)
+    public IActionResult UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
     {
-        if (employee is null)
-            return BadRequest("EmployeeForUpdateDto object is null");
-
-        _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId,
-            id,
-            employee,
-            compTrackChanges: false,
+        if (employee is null) return BadRequest("EmployeeForUpdateDto object is null");
+        _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId, id, employee, compTrackChanges: false,
             empTrackChanges: true);
+        return NoContent();
+    }
 
+    // PATCH
+    [HttpPatch("{id:guid}")]
+    public IActionResult PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id,
+        [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)
+    {
+        if (patchDoc is null) return BadRequest("patchDoc object sent from client is null.");
+        var result =
+            _serviceManager.EmployeeService.GetEmployeeForPatch(companyId, id, compTrackChanges: false,
+                empTrackChanges: true);
+        patchDoc.ApplyTo(result.employeeToPatch);
+        _serviceManager.EmployeeService.SaveChangesForPatch(result.employeeToPatch, result.employeeEntity);
         return NoContent();
     }
 }
