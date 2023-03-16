@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CompanyEmployees.Presentation.ActionFilters;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Microsoft.AspNetCore.JsonPatch;
@@ -25,6 +26,8 @@ public class EmployeesController : ControllerBase
         return Ok(employees);
     }
 
+    // GET
+
     [HttpGet("{id:guid}",
         Name = "GetEmployeeForCompany")]
     public async Task<IActionResult> GetEmployeeForCompany(Guid companyId,
@@ -38,18 +41,10 @@ public class EmployeesController : ControllerBase
 
     // POST
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateEmployeeForCompany(Guid companyId,
         [FromBody] EmployeeForCreationDto employee)
     {
-        if (employee is null)
-            return BadRequest("EmployeeForCreationDto object is null");
-
-        if (!ModelState.IsValid)
-        {
-            ModelState.AddModelError("CustomError", "Este es un error personalizado");
-            return UnprocessableEntity(ModelState);
-        }
-
         var employeeToReturn =
             await _serviceManager.EmployeeService.CreateEmployeeForCompanyAsync(companyId,
                 employee,
@@ -76,16 +71,11 @@ public class EmployeesController : ControllerBase
 
     // UPDATE
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateEmployeeForCompany(Guid companyId,
         Guid id,
         [FromBody] EmployeeForUpdateDto employee)
     {
-        if (employee is null)
-            return BadRequest("EmployeeForUpdateDto object is null");
-
-        if (!ModelState.IsValid)
-            return UnprocessableEntity(ModelState);
-
         await _serviceManager.EmployeeService.UpdateEmployeeForCompanyAsync(companyId,
             id,
             employee,
