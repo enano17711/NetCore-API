@@ -15,12 +15,7 @@ public class RepositoryManager : IRepositoryManager
         _employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(repositoryContext));
     }
 
-    public ICompanyRepository Company =>
-        _companyRepository.Value;
-
-    public IEmployeeRepository Employee =>
-        _employeeRepository.Value;
-
-    public void Save() =>
-        _repositoryContext.SaveChanges();
+    public ICompanyRepository Company => _companyRepository.Value;
+    public IEmployeeRepository Employee => _employeeRepository.Value;
+    public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
 }
