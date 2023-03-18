@@ -1,8 +1,10 @@
-﻿using CompanyEmployees.Presentation.ActionFilters;
+﻿using System.Text.Json;
+using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Microsoft.AspNetCore.JsonPatch;
+using Shared.RequestFeatures;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
@@ -10,20 +12,25 @@ namespace CompanyEmployees.Presentation.Controllers;
 [ApiController]
 public class EmployeesController : ControllerBase
 {
-    private readonly IServiceManager _serviceManager;
+    private readonly IServiceManager _service;
 
-    public EmployeesController(IServiceManager serviceManager)
+    public EmployeesController(IServiceManager service)
     {
-        _serviceManager = serviceManager;
+        _service = service;
     }
 
     // GET
     [HttpGet]
-    public async Task<IActionResult> GetEmployeesFromCompany(Guid companyId)
+    public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
+        [FromQuery] EmployeeParameters employeeParameters)
     {
-        var employees = await _serviceManager.EmployeeService.GetEmployeesAsync(companyId,
-            trackChanges: false);
-        return Ok(employees);
+        var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId,
+            employeeParameters, trackChanges: false);
+
+        Response.Headers.Add("X-Pagination",
+            JsonSerializer.Serialize(pagedResult.metaData));
+
+        return Ok(pagedResult.employees);
     }
 
     // GET
@@ -33,7 +40,7 @@ public class EmployeesController : ControllerBase
     public async Task<IActionResult> GetEmployeeForCompany(Guid companyId,
         Guid id)
     {
-        var employee = await _serviceManager.EmployeeService.GetEmployeeAsync(companyId,
+        var employee = await _service.EmployeeService.GetEmployeeAsync(companyId,
             id,
             trackChanges: false);
         return Ok(employee);
@@ -46,7 +53,7 @@ public class EmployeesController : ControllerBase
         [FromBody] EmployeeForCreationDto employee)
     {
         var employeeToReturn =
-            await _serviceManager.EmployeeService.CreateEmployeeForCompanyAsync(companyId,
+            await _service.EmployeeService.CreateEmployeeForCompanyAsync(companyId,
                 employee,
                 trackChanges: false);
         return CreatedAtRoute("GetEmployeeForCompany",
@@ -63,7 +70,7 @@ public class EmployeesController : ControllerBase
     public async Task<IActionResult> DeleteEmployeeForCompany(Guid companyId,
         Guid id)
     {
-        await _serviceManager.EmployeeService.DeleteEmployeeForCompanyAsync(companyId,
+        await _service.EmployeeService.DeleteEmployeeForCompanyAsync(companyId,
             id,
             trackChanges: false);
         return NoContent();
@@ -76,7 +83,7 @@ public class EmployeesController : ControllerBase
         Guid id,
         [FromBody] EmployeeForUpdateDto employee)
     {
-        await _serviceManager.EmployeeService.UpdateEmployeeForCompanyAsync(companyId,
+        await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId,
             id,
             employee,
             compTrackChanges: false,
@@ -94,12 +101,13 @@ public class EmployeesController : ControllerBase
             return BadRequest("patchDoc object sent from client is null.");
 
         var result =
-            await _serviceManager.EmployeeService.GetEmployeeForPatchAsync(companyId,
+            await _service.EmployeeService.GetEmployeeForPatchAsync(companyId,
                 id,
                 compTrackChanges: false,
                 empTrackChanges: true);
 
-        patchDoc.ApplyTo(result.employeeToPatch, ModelState);
+        patchDoc.ApplyTo(result.employeeToPatch,
+            ModelState);
 
         TryValidateModel(result.employeeToPatch);
 
@@ -107,7 +115,7 @@ public class EmployeesController : ControllerBase
             return UnprocessableEntity(ModelState);
 
 
-        await _serviceManager.EmployeeService.SaveChangesForPatchAsync(result.employeeToPatch,
+        await _service.EmployeeService.SaveChangesForPatchAsync(result.employeeToPatch,
             result.employeeEntity);
         return NoContent();
     }
