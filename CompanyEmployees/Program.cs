@@ -1,5 +1,6 @@
 using CompanyEmployees.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
+using CompanyEmployees.Utility;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,11 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<ApiBehaviorOptions>(option => { option.SuppressModelStateInvalidFilter = true; });
 // Filters action like services
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 // Shape data
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+// Data Links
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 // Program Class
 builder.Services.AddControllers(config =>
     {
@@ -40,6 +44,8 @@ builder.Services.AddControllers(config =>
     .AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+// Custom Media type
+builder.Services.AddCustomMediaType();
 
 var app = builder.Build();
 
