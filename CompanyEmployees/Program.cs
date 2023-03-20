@@ -32,7 +32,7 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 // Shape data
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
-// Data Links
+// Data Shaped Links
 builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 // Program Class
 builder.Services.AddControllers(config =>
