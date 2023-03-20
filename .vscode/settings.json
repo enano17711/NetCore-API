@@ -1,0 +1,6 @@
+{
+    "docify.commentService.programmingLanguage": "c_sharp",
+    "docify.commentService.docstringFormat": "XML",
+    "docify.translateService.docstringFormat": "XML",
+    "docify.commentService.inlineComments": true
+}
