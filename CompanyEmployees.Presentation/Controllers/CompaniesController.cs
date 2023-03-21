@@ -23,7 +23,7 @@ public class CompaniesController : ControllerBase
     }
 
     // GET ALL
-    [HttpGet]
+    [HttpGet(Name = "GetCompanies")]
     public async Task<IActionResult> GetCompanies()
     {
         var companies = await _service.CompanyService.GetAllCompaniesAsync(trackChanges: false);
@@ -39,7 +39,7 @@ public class CompaniesController : ControllerBase
     }
 
     // CREATE
-    [HttpPost]
+    [HttpPost(Name = "CreateCompany")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
     {
