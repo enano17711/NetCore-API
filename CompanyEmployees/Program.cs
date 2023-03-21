@@ -42,6 +42,11 @@ builder.Services.ConfigureHttpCacheHeaders();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
+// Identity
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
+// JWT
+builder.Services.ConfigureJWT(builder.Configuration);
 // Program Class
 builder.Services.AddControllers(config =>
     {
@@ -81,6 +86,7 @@ app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
