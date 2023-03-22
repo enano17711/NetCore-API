@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 // nlog register
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
     "/nlog.config"));
-
 // Add services to the container.
 // ServiceExtension Class
 builder.Services.ConfigureCors();
@@ -47,6 +46,7 @@ builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 // JWT
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.AddJwtConfiguration(builder.Configuration);
 // Program Class
 builder.Services.AddControllers(config =>
     {
