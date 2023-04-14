@@ -1,4 +1,4 @@
-# NetCore-API-Learning
+# NetCore-API
 company employees back-end api
 
 - Onion Architecture
